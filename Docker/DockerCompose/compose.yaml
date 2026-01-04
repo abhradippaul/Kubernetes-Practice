@@ -1,0 +1,57 @@
+---
+services:
+  flask:
+    image: abhradippaul/flask:latest
+    build:
+      context: flask
+      dockerfile: Dockerfile
+    ports:
+      - 7070:8080
+    env_file:
+      - ./flask/dev.env
+    secrets:
+      - api_key
+      - source: api_key
+        target: /api_key.txt
+    configs:
+      - source: my_config
+        target: /config-dev-v2.yaml
+    environment:
+      - APP_VERSION=0.1.0
+    volumes:
+      - ./flask/config-dev.yaml:/config-dev.yaml
+      - flask_data:/data
+    networks:
+      - private
+
+  postgres:
+    image: postgres:16.3
+    ports:
+      - 5732:5732
+    environment:
+      - POSTGRES_USER: myuser
+      - POSTGRES_DB: mydb
+      - POSTGRES_PASSWORD_FILE: /run/secrets/pg_password
+    secrets:
+      - pg_password
+    volumes:
+      - postgres-data:/var/lib/postgres/data
+    networks:
+      - private
+
+secrets:
+  api_key:
+    file: ./flask/api_key.txt
+  pg_password:
+    file: ./pg_password.txt
+
+configs:
+  my_config:
+    file: ./flask/config-dev.yaml
+
+volumes:
+  flask_data:
+
+
+networks:
+  private:
