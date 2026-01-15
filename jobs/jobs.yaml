@@ -1,0 +1,18 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: busybox-job
+spec:
+  template:
+    spec:
+      containers:
+      - name: busybox
+        image: busybox
+        command: 
+        - sh
+        - -c
+        - |
+          echo Hello World 
+          sleep 5000
+      restartPolicy: Never
+  backoffLimit: 4

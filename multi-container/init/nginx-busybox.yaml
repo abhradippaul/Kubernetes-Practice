@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    run: nginx-init-pod
+    env: prod
+  name: nginx-init-pod
+  namespace: default
+spec:
+  initContainers:
+  - name: busybox-init
+    image: busybox
+    command:
+    - sh
+    - -c
+    args:
+    - echo Hello world; sleep 5000
+  containers:
+  - image: nginx
+    name: nginx-pod
+    ports:
+    - containerPort: 80
+    resources: {}
+  dnsPolicy: ClusterFirst
+  restartPolicy: Always

@@ -31,4 +31,7 @@ kubectl get pods --show-labels
 
 # Get Pods with Details
 kubectl get pods -o wide
+
+# Get Pods with selector
+kubectl get pods --selector tier=frontend
 ```
