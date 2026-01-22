@@ -1,0 +1,21 @@
+apiVersion: v1
+data:
+  firstname: abhradip
+  lastname: paul
+kind: ConfigMap
+metadata:
+  name: app-cm
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: env-configmap
+spec:
+  containers:
+    - name: app
+      command: ["/bin/sh", "-c", "echo $firstname; echo $lastname"]
+      image: busybox:latest
+      envFrom:
+        - configMapRef:
+            name: app-cm
