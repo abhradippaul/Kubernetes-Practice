@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-pod
+spec:
+  nodeName: controlplane
+  volumes:
+    - name: pv-storage
+      persistentVolumeClaim:
+        claimName: pvc-volume
+  containers:
+  - image: nginx
+    name: nginx-pod
+    ports:
+    - containerPort: 80
+    volumeMounts:
+        - name: pv-storage
+          mountPath: /usr/share/nginx/html
+          subPath: html
+        - name: pv-storage
+          mountPath: /etc/nginx/nginx.conf
+          subPath: nginx.conf
