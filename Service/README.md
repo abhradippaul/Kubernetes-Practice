@@ -1,8 +1,9 @@
 # Understanding Service
 
 ## Basic Service Command
+
 ```bash
-# Expose Pod 
+# Expose Pod
 kubectl expose pod nginx-pod --name=nginx-pod-service --port=80 --target-port=80 --type=ClusterIP
 
 # Expose Deployment
@@ -16,6 +17,7 @@ kubectl delete svc nginx-service
 ```
 
 ### Service Label and Annotation
+
 ```bash
 # Add or Update label
 kubectl label svc nginx-service env=stage --overwrite
@@ -31,6 +33,7 @@ kubectl annotate svc nginx-service owner-
 ```
 
 ### Basic Pod Checking Commands
+
 ```bash
 # Get all service
 kubectl get svc
@@ -40,4 +43,7 @@ watch kubectl get svc
 
 # Describe service
 kubectl describe svc nginx-service
+
+# Check endpoints
+kubectl get endpoints
 ```

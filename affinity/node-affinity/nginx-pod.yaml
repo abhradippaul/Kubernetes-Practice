@@ -3,25 +3,21 @@ kind: Pod
 metadata:
   labels:
     run: nginx-pod
-    env: nginx
+    app: node-affinity
   name: nginx-pod
-  namespace: default
 spec:
   affinity:
     nodeAffinity:
       preferredDuringSchedulingIgnoredDuringExecution:
-      - weight: 1
-        preference:
-          matchExpressions:
-          - key: disktype
-            operator: In # Exists/NotIn/Not/DoesNotExist/Gt/Lt
-            values:
-            - localdisk
+        - weight: 1
+          preference:
+            matchExpressions:
+              - key: disktype
+                operator: In
+                values:
+                  - hdd
   containers:
-  - image: nginx
-    name: nginx-pod
-    ports:
-    - containerPort: 80
-    resources: {}
-  dnsPolicy: ClusterFirst
-  restartPolicy: Always
+    - image: nginx
+      name: nginx-pod
+      ports:
+        - containerPort: 80

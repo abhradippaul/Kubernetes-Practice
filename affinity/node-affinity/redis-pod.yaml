@@ -3,25 +3,21 @@ kind: Pod
 metadata:
   labels:
     run: redis-pod
-    env: redis
+    app: node-affinity
   name: redis-pod
-  namespace: default
 spec:
   affinity:
     nodeAffinity:
       requiredDuringSchedulingIgnoredDuringExecution:
         nodeSelectorTerms:
-        - matchExpressions:
-          - key: disktype
-            operator: In
-            values:
-            - ssd
-            - hdd
+          - matchExpressions:
+              - key: disktype
+                operator: In
+                values:
+                  - ssd
+                  - hdd
   containers:
-  - image: redis
-    name: redis-pod
-    ports:
-    - containerPort: 6379
-    resources: {}
-  dnsPolicy: ClusterFirst
-  restartPolicy: Always
+    - image: redis
+      name: redis-pod
+      ports:
+        - containerPort: 6379
