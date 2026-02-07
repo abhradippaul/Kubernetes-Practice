@@ -4,8 +4,8 @@ metadata:
   labels:
     app: nginx-deploy
   name: nginx-deploy
-  namespace: default
 spec:
+  terminationGracePeriodSeconds: 30
   replicas: 2
   selector:
     matchLabels:
@@ -32,4 +32,3 @@ spec:
           requests:
             cpu: 10m
             memory: 20Mi
-status: {}

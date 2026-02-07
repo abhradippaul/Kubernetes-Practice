@@ -1,11 +1,54 @@
 # Understanding Deployment And Replicaset
 
+## Create Nginx Deployment
+
+```bash
+# Create Nginx Deployment
+kubectl apply -f - <<EOF
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: nginx-deploy
+  name: nginx-deploy
+spec:
+  terminationGracePeriodSeconds: 30
+  replicas: 2
+  selector:
+    matchLabels:
+      app: nginx-deploy
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: nginx-deploy
+    spec:
+      containers:
+      - image: nginx
+        name: nginx
+        ports:
+        - containerPort: 80
+        resources:
+          limits:
+            cpu: 10m
+            memory: 20Mi
+          requests:
+            cpu: 10m
+            memory: 20Mi
+EOF
+```
+
 ## Deployment Creation and Config with Imperetive Commands
+
 ```bash
 # Create Deployment Resource
 kubectl create deployment nginx-deploy --image=nginx --replicas=2 --port=80
 
-# Set Request and Limit 
+# Set Request and Limit
 kubectl set resources deployment nginx-deploy --limits=cpu=10m,memory=20Mi --requests=cpu=10m,memory=20Mi
 
 # Update Replica of Deployment
@@ -22,6 +65,7 @@ kubectl delete deploy nginx-deploy
 ```
 
 ## Deployment Label and Annotation
+
 ```bash
 # Create or Update the label in Deployment
 kubectl label deployment nginx-deploy env=prod --overwrite
@@ -37,6 +81,7 @@ kubectl annotate deployment nginx-deploy owner-
 ```
 
 ## Deployment Rollout
+
 ```bash
 # Rollout Restart Deployment
 kubectl rollout restart deployment nginx-deploy
@@ -64,6 +109,7 @@ kubectl rollout undo deployment nginx-deploy --to-revision=2
 ```
 
 ### Basic Deployment Checking Commands
+
 ```bash
 # Watch the Pods
 watch kubectl get pods
