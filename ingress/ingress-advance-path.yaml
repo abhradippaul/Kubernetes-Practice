@@ -1,0 +1,30 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-path
+  annotations:
+    nginx.org/path-regex: "case_sensitive"
+    nginx.org/rewrites: |
+      serviceName=service-a rewrite=/path-a/(.*) /$1 break;
+      serviceName=service-b rewrite=/path-b/(.*) /$1 break;
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: public.my-services.com
+    http:
+      paths:
+      - path: /path-a/(.*)
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: service-a
+            port:
+              number: 80
+
+      - path: /path-b/(.*)
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: service-b
+            port:
+              number: 80
