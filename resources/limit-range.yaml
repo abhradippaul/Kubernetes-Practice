@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: example-limitrange
+spec:
+  limits:
+    - default: # this section defines default limits
+        cpu: 500m
+        memory: 500Mi
+      defaultRequest: # this section defines default requests
+        cpu: 500m
+        memory: 500Mi
+      max: # max and min define the limit range
+        cpu: "1"
+        memory: 1Gi
+      min:
+        cpu: 100m
+        memory: 500Mi
+      type: Container

@@ -12,7 +12,6 @@ metadata:
     app: nginx-deploy
   name: nginx-deploy
 spec:
-  terminationGracePeriodSeconds: 30
   replicas: 2
   selector:
     matchLabels:
@@ -27,6 +26,7 @@ spec:
       labels:
         app: nginx-deploy
     spec:
+      terminationGracePeriodSeconds: 30
       containers:
       - image: nginx
         name: nginx

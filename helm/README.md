@@ -18,5 +18,5 @@ helm install my-nginx bitnami/nginx --version 22.4.7
 # Create helm chart
 helm create my-app
 
-helm install my-release ./my-app
+helm upgrade --install my-release ./my-app
 ```
