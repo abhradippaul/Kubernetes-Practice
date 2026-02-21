@@ -1,0 +1,10 @@
+apiVersion: example.com/v1
+kind: TLSCertificate
+metadata:
+  name: api-example-tls-cert
+spec:
+  commonName: api.example.com
+  dnsNames:
+    - api.example.com
+    - internal-api.example.com
+  expirationDate: "2027-01-01T00:00:00Z"

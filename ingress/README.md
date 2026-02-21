@@ -317,11 +317,11 @@ EOF
 
 ```bash
 # Add repo using helm
-helm repo add nginx-ingress oci://ghcr.io/nginx/charts/nginx-ingress
+helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
 helm repo update
 
 # Helm release install
-helm upgrade --install nginx-ingress oci://ghcr.io/nginx/charts/nginx-ingress -n ingress-nginx --create-namespace
+helm upgrade --install ingress-nginx ingress-nginx/ingress-nginx -n ingress-nginx --create-namespace
 ```
 
 ## Check ingress
