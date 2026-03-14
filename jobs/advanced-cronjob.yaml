@@ -1,0 +1,23 @@
+# Advanced CronJob Example
+
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: advanced-cronjob
+spec:
+  schedule: "0 3 * * 0" # Runs every Sunday at 3 AM
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: advanced-task
+              image: busybox
+              args:
+                - /bin/sh
+                - -c
+                - "echo Advanced CronJob running; date"
+          restartPolicy: OnFailure
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 5
+  failedJobsHistoryLimit: 2
