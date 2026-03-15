@@ -3,6 +3,7 @@
 ## ETCD Security Guidelines
 
 ### Plain text data storage
+
 ```bash
 # Store data in ETCD
 etcdctl --endpoints=https://127.0.0.1:2379 --cacert=/etc/kubernetes/pki/etcd/ca.crt put name "Abhradip Paul"
@@ -15,9 +16,10 @@ cat /var/lib/etcd/member/snap
 ```
 
 ### TLS Encryption
+
 ```bash
 # Listen in the port
-tcpdump -i lo -x port 2379 
+tcpdump -i lo -x port 2379
 
 # Get data from ETCD
 etcdctl --endpoints=https://127.0.0.1:2379 --cacert=/etc/kubernetes/pki/etcd/ca.crt get name
@@ -27,6 +29,7 @@ etcd --listen-client-urls https://127.0.0.1:2379 --advertise-client-urls https:/
 ```
 
 ### Certificate Based Authentication
+
 ```bash
 # Store data in ETCD if authentication enabled
 etcdctl --user=root:password put name "Abhradip Paul"
@@ -71,6 +74,7 @@ openssl x509 -in client.crt -text -noout
 ```
 
 ### Configure CA
+
 ```bash
 # Step 1 - Creating a private key for Certificate Authority:
 mkdir /root/certificates
@@ -82,6 +86,9 @@ openssl genrsa -out ca.key 2048
 
 openssl req -new -key ca.key -subj "/CN=KUBERNETES-CA" -out ca.csr
 
+# Verify the csr
+openssl req -in ca.csr -text -noout
+
 # Step 3 - Self-Sign the CSR:
 openssl x509 -req -in ca.csr -signkey ca.key -out ca.crt -days 1000
 
@@ -90,6 +97,7 @@ openssl x509 -in client.crt -text -noout
 ```
 
 ### Configure client certificate
+
 ```bash
 # Step 1 - Generate Client CSR and Client Key:
 cd /root/certificates
@@ -107,8 +115,8 @@ openssl x509 -in abhra.crt -text -noout
 openssl verify -CAfile ca.crt abhra.crt
 ```
 
-
 ### Configure ETCD certificate
+
 ```bash
 # Pre-Requisite: Install Network Utilities
 apt-get -y install tcpdump net-tools
@@ -216,6 +224,7 @@ etcdctl --endpoints=https://127.0.0.1:2379 \
 ```
 
 ### ETCD Systemd
+
 ```bash
 Step 1: Create Data Directory for etcd
 mkdir /var/lib/etcd

@@ -1,0 +1,39 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: webserver-httproute-pathbase
+  namespace: webserver
+spec:
+  parentRefs:
+    - name: web-gateway
+      sectionName: http
+      kind: Gateway
+  hostnames:
+    - "www.path.com"
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /nginx
+      filters:
+        - type: RequestRedirect
+          requestRedirect:
+            path:
+              replace: /
+      backendRefs:
+        - name: nginx-service
+          port: 80
+          weight: 1
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /apache
+      filters:
+        - type: RequestRedirect
+          requestRedirect:
+            path:
+              replace: /
+      backendRefs:
+        - name: apache-service
+          port: 80
+          weight: 1
