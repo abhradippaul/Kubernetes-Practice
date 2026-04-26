@@ -272,298 +272,530 @@ Delete all pods created during this practice.
 kubectl delete pods --all
 ```
 
-Create 2 Pods for Testing
-kubectl run nginx --image=nginx
-
 kubectl run curl --image=alpine/curl -- sleep 36000
-Entities - Cluster
-nano entities-cluster.yaml
+kubectl get pods -o wide
+kubectl exec -it curl-pod -- sh
+curl <NGINX-POD-IP>
+ping google.com
+curl google.com
+kubectl get pods -o wide
+kubectl exec -it curl-pod -- sh
+curl <NGINX-POD-IP>
+curl google.com
+ping google.com
+
+---
+
+## Entities Example: Cluster
+
+### Create 2 Pods for Testing
+
+```bash
+kubectl run nginx --image=nginx
+kubectl run curl --image=alpine/curl -- sleep 36000
+```
+
+### Create a CiliumNetworkPolicy to restrict egress to the cluster
+
+Create a file named `entities-cluster.yaml` with the following content:
+
+```yaml
 apiVersion: "cilium.io/v2"
 kind: CiliumNetworkPolicy
 metadata:
-name: "restrict-egress-to-cluster"
+  name: restrict-egress-to-cluster
 spec:
-endpointSelector: {}
-egress: - toEntities: - "cluster"
+  endpointSelector: {}
+  egress:
+    - toEntities:
+        - cluster
+```
+
+Apply the policy:
+
+```bash
 kubectl create -f entities-cluster.yaml
-Test the Setup
+```
 
+#### Test the Setup
+
+```bash
 kubectl get pods -o wide
-
 kubectl exec -it curl-pod -- sh
-
 curl <NGINX-POD-IP>
-
-ping google.com
-
-curl google.com
-kubectl delete -f entities-cluster.yaml
-Entities - World
-nano entities-world.yaml
-apiVersion: "cilium.io/v2"
-kind: CiliumNetworkPolicy
-metadata:
-name: "restrict-egress-to-cluster"
-spec:
-endpointSelector: {}
-egress: - toEntities: - "world"
-kubectl create -f entities-world.yaml
-Test the Setup
-
-kubectl get pods -o wide
-
-kubectl exec -it curl-pod -- sh
-
-curl <NGINX-POD-IP>
-curl google.com
-ping google.com
-kubectl delete -f entities-world.yaml
 Entities - All
-nano entities-all.yaml
+curl google.com
+```
+
+Delete the policy:
+
+```bash
+kubectl delete -f entities-cluster.yaml
+```
+
+---
+
+## Entities Example: World
+
+Create a file named `entities-world.yaml` with the following content:
+
+```yaml
 apiVersion: "cilium.io/v2"
 kind: CiliumNetworkPolicy
 metadata:
-name: "allow-all-egress"
+  name: restrict-egress-to-world
 spec:
-endpointSelector: {}
-egress: - toEntities: - "all"
+  endpointSelector: {}
+  egress:
+    - toEntities:
+        - world
+```
+
+Apply the policy:
+
+```bash
+kubectl create -f entities-world.yaml
+```
+
+#### Test the Setup
+
+```bash
+kubectl get pods -o wide
+kubectl exec -it curl-pod -- sh
+curl <NGINX-POD-IP>
+curl google.com
+ping google.com
+```
+
+Delete the policy:
+
+```bash
+kubectl delete -f entities-world.yaml
+```
+
+kubectl get pods -o wide
+kubectl exec -it curl-pod -- sh
+curl <NGINX-POD-IP>
+curl google.com
+ping google.com
+kubectl run curl --image=alpine/curl -- sleep 36000
+kubectl get pods -o wide
+kubectl exec -it curl-pod -- sh
+curl <NGINX-POD-IP>
+ping google.com
+curl google.com
+kubectl delelte pods --all
+
+---
+
+## Entities Example: All
+
+Create a file named `entities-all.yaml` with the following content:
+
+```yaml
+apiVersion: "cilium.io/v2"
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-all-egress
+spec:
+  endpointSelector: {}
+  egress:
+    - toEntities:
+        - all
+```
+
+Apply the policy:
+
+```bash
 kubectl create -f entities-all.yaml
-Test the Setup
+```
 
+#### Test the Setup
+
+```bash
 kubectl get pods -o wide
-
 kubectl exec -it curl-pod -- sh
-
 curl <NGINX-POD-IP>
-
 curl google.com
-
 ping google.com
+```
+
+Delete the policy:
+
+```bash
 kubectl delete -f entities-all.yaml
-Delete the Resources Created for this Lab
-kubectl delelte pods --all
+```
 
-Create 2 Pods for Testing
+---
+
+## L4 Egress Policy Example
+
+### Create 2 Pods for Testing
+
+```bash
 kubectl run nginx --image=nginx
-
 kubectl run curl --image=alpine/curl -- sleep 36000
-Create Cilium Network Policy
-nano cnp-l4.yaml
+```
+
+### Create a CiliumNetworkPolicy to allow egress only to port 80
+
+Create a file named `cnp-l4.yaml` with the following content:
+
+```yaml
 apiVersion: "cilium.io/v2"
 kind: CiliumNetworkPolicy
 metadata:
-name: allow-external-80
+  name: allow-external-80
 spec:
-endpointSelector:
-matchLabels:
-run: curl
-egress: - toPorts: - ports: - port: "80"
-protocol: TCP
-Test the Setup
+  endpointSelector:
+    matchLabels:
+      run: curl
+  egress:
+    - toPorts:
+        - ports:
+            - port: "80"
+              protocol: TCP
+```
 
+Apply the policy:
+
+```bash
+kubectl create -f cnp-l4.yaml
+```
+
+#### Test the Setup
+
+```bash
 kubectl get pods -o wide
-
 kubectl exec -it curl-pod -- sh
-
 curl <NGINX-POD-IP>
-
 ping google.com
-
 curl google.com
-Delete the Resources Created for this Lab
+```
+
+Delete the policy:
+
+```bash
 kubectl delete -f cnp-l4.yaml
+```
 
-kubectl delelte pods --all
+---
 
-Create Pod for Testing
+## DNS Policy Example
+
+### Create Pod for Testing
+
+```bash
 kubectl run curl --image=alpine/curl -- sleep 36000
-DNS
-nano allow-dns.yaml
+```
+
+### Create a CiliumNetworkPolicy to allow DNS to a specific domain
+
+Create a file named `allow-dns.yaml` with the following content:
+
+```yaml
 apiVersion: "cilium.io/v2"
 kind: CiliumNetworkPolicy
 metadata:
-name: "allow-dns-kplabs"
+  name: allow-dns-kplabs
 spec:
-endpointSelector: {}
-egress:
+  endpointSelector: {}
+  egress:
+    - toPorts:
+        - ports:
+            - port: "53"
+          rules:
+            dns:
+              - matchName: "kplabs.in"
+```
 
-- toPorts: - ports: - port: "53"
-  rules:
-  dns: - matchName: "kplabs.in"
-  kubectl create -f allow-dns.yaml
-  Testing
-  nslookup google.com
+Apply the policy:
 
+```bash
+kubectl create -f allow-dns.yaml
+```
+
+#### Testing
+
+```bash
+nslookup google.com
 nslookup kplabs.in
-Delete the Setup
-kubectl delete -f allow-dns.yaml kubectl delete pod curl
+```
 
-Create 3 Pods for Testing
-kubectl run nginx --image=nginx --labels=app=server
+Delete the setup:
+
+```bash
+kubectl delete -f allow-dns.yaml
+kubectl delete pod curl
+```
 
 kubectl run random-pod --labels=app=random-pod --image=alpine/curl -- sleep 36000
-
 kubectl run backend-pod --image=alpine/curl -- sleep 36000
-1 - Create ingressDeny Policy
-nano ingressDeny.yaml
+kubectl exec -it backend-pod -- sh
+kubectl exec -it random-pod -- sh
+kubectl delete -f ingressDeny.yaml
+egress:
+kubectl exec -it random-pod -- sh
+curl google.com
+kubectl delete pod nginx random-pod backend-pod
+kubectl -n kube-system get secrets cilium-ipsec-keys
+cilium install --version 1.17.1 --set encryption.enabled=true --set encryption.type=ipsec
+cilium status
+cilium config view | grep enable-ipsec
+kubectl get nodes
+nano curl-pod.yaml
+kubectl exec -it curl -- sh
+curl <NGINX-POD-IP>
+cilium install --version 1.17.1 --set encryption.enabled=true --set encryption.type=wireguard
+cilium status
+cilium config view | grep enable-wireguard
+nano curl-pod.yaml
+
+---
+
+## Advanced Policy: Ingress and Egress Deny
+
+### Create 3 Pods for Testing
+
+```bash
+kubectl run nginx --image=nginx --labels=app=server
+kubectl run random-pod --labels=app=random-pod --image=alpine/curl -- sleep 36000
+kubectl run backend-pod --image=alpine/curl -- sleep 36000
+```
+
+### 1. Create ingressDeny Policy
+
+Create a file named `ingressDeny.yaml` with the following content:
+
+```yaml
 apiVersion: "cilium.io/v2"
 kind: CiliumNetworkPolicy
 metadata:
-name: "deny-ingress"
+  name: deny-ingress
 spec:
-endpointSelector:
-matchLabels:
-app: server
-ingress:
+  endpointSelector:
+    matchLabels:
+      app: server
+  ingress:
+    - fromEntities:
+        - all
+      ingressDeny: {}
+    - fromEndpoints:
+        - matchLabels:
+            app: random-pod
+```
 
-- fromEntities:
-  - all
-    ingressDeny:
-- fromEndpoints: - matchLabels:
-  app: random-pod
-  kubectl create -f ingressDeny.yaml
-  Verification
-  kubectl get pods -o wide
+Apply the policy:
 
+```bash
+kubectl create -f ingressDeny.yaml
+```
+
+#### Verification
+
+```bash
+kubectl get pods -o wide
 kubectl exec -it backend-pod -- sh
 curl <NGINX-POD-IP>
 ping <NGINX-POD-IP>
-
 kubectl exec -it random-pod -- sh
 curl <NGINX-POD-IP>
 ping <NGINX-POD-IP>
+```
+
+Delete the policy:
+
+```bash
 kubectl delete -f ingressDeny.yaml
-2 - Create egressDeny Policy
-nano egressDeny.yaml
+```
+
+### 2. Create egressDeny Policy
+
+Create a file named `egressDeny.yaml` with the following content:
+
+```yaml
 apiVersion: "cilium.io/v2"
 kind: CiliumNetworkPolicy
 metadata:
-name: "deny-egress"
+  name: deny-egress
 spec:
-endpointSelector:
-matchLabels:
-app: random-pod
-egress:
+  endpointSelector:
+    matchLabels:
+      app: random-pod
+  egress:
+    - toEntities:
+        - all
+      egressDeny: {}
+    - toEndpoints:
+        - matchLabels:
+            app: server
+```
 
-- toEntities:
-  - all
-    egressDeny:
-- toEndpoints: - matchLabels:
-  app: server
-  kubectl create -f egressDeny.yaml
-  Verification
-  kubectl get pods -o wide
+Apply the policy:
 
+```bash
+kubectl create -f egressDeny.yaml
+```
+
+#### Verification
+
+```bash
+kubectl get pods -o wide
 kubectl exec -it random-pod -- sh
 curl <NGINX-POD-IP>
 ping <NGINX-POD-IP>
-
 curl google.com
 ping google.com
-Delete the Created Resources
+```
+
+Delete the policy and pods:
+
+```bash
 kubectl delete -f egressDeny.yaml
-
 kubectl delete pod nginx random-pod backend-pod
+```
 
-Generate and Import PSK
+---
+
+## Transparent Encryption with Cilium
+
+### Generate and Import PSK (IPSec)
+
+```bash
 kubectl create -n kube-system secret generic cilium-ipsec-keys \
- --from-literal=keys="3+ rfc4106(gcm(aes)) $(echo $(dd if=/dev/urandom count=20 bs=1 2> /dev/null | xxd -p -c 64)) 128"
-
+  --from-literal=keys="3+ rfc4106(gcm(aes)) $(echo $(dd if=/dev/urandom count=20 bs=1 2> /dev/null | xxd -p -c 64)) 128"
 kubectl -n kube-system get secrets cilium-ipsec-keys
-Enable Transparent Encryption in Cilium (IPSec)
+```
+
+### Enable Transparent Encryption in Cilium (IPSec)
+
+```bash
 cilium install --version 1.17.1 --set encryption.enabled=true --set encryption.type=ipsec
-
 cilium status
-
 cilium config view | grep enable-ipsec
-
 kubectl get nodes
-Testing the Setup
-Launch 2 Pods in different worker node (Terminal Tab 1)
-nano curl-pod.yaml
+```
+
+### Test IPSec Encryption
+
+Create two pods on different worker nodes:
+
+**curl-pod.yaml**
+
+```yaml
 apiVersion: v1
 kind: Pod
 metadata:
-name: curl
+  name: curl
 spec:
-nodeSelector:
-kubernetes.io/hostname: kind-worker
-containers:
-
-- name: busybox
-  image: alpine/curl
-  command: ["sleep", "36000"]
-  kubectl create -f curl-pod.yaml
-  nano nginx-pod.yaml
-  apiVersion: v1
-  kind: Pod
-  metadata:
-  name: nginx
-  spec:
   nodeSelector:
-  kubernetes.io/hostname: kind-worker2
+    kubernetes.io/hostname: kind-worker
   containers:
-- name: nginx
-  image: nginx
-  kubectl create -f nginx-pod.yaml
-  Run a bash shell in one of the Cilium pods (Terminal Tab 2)
-  kubectl -n kube-system exec -ti ds/cilium -- bash
-  Install tcpdump and check if traffic is encrypted
-  apt-get update
-  apt-get -y install tcpdump
-  tcpdump -n -i cilium_vxlan esp
-  In Terminal Tab 1
-  kubectl get pods -o wide
+    - name: busybox
+      image: alpine/curl
+      command: ["sleep", "36000"]
+```
 
+**nginx-pod.yaml**
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx
+spec:
+  nodeSelector:
+    kubernetes.io/hostname: kind-worker2
+  containers:
+    - name: nginx
+      image: nginx
+```
+
+```bash
+kubectl create -f curl-pod.yaml
+kubectl create -f nginx-pod.yaml
+```
+
+Run a bash shell in a Cilium pod and check for encrypted traffic:
+
+```bash
+kubectl -n kube-system exec -ti ds/cilium -- bash
+apt-get update && apt-get -y install tcpdump
+tcpdump -n -i cilium_vxlan esp
+```
+
+In another terminal:
+
+```bash
+kubectl get pods -o wide
 kubectl exec -it curl -- sh
-
 curl <NGINX-POD-IP>
-Delete the Kind Cluster
+```
+
+Delete the Kind cluster:
+
+```bash
 kind delete cluster
+```
 
-Enable Transparent Encryption in Cilium (WireGuard)
+---
+
+## Transparent Encryption with WireGuard
+
+### Enable Transparent Encryption in Cilium (WireGuard)
+
+```bash
 cilium install --version 1.17.1 --set encryption.enabled=true --set encryption.type=wireguard
-
 cilium status
-
 cilium config view | grep enable-wireguard
-Testing the Setup
-Launch 2 Pods in different worker node (Terminal Tab 1)
-nano curl-pod.yaml
-apiVersion: v1
-kind: Pod
-metadata:
-name: curl
-spec:
-nodeSelector:
-kubernetes.io/hostname: kind-worker
-containers:
+```
 
-- name: busybox
-  image: alpine/curl
-  command: ["sleep", "36000"]
-  kubectl create -f curl-pod.yaml
-  nano nginx-pod.yaml
-  apiVersion: v1
-  kind: Pod
-  metadata:
-  name: nginx
-  spec:
-  nodeSelector:
-  kubernetes.io/hostname: kind-worker2
-  containers:
-- name: nginx
-  image: nginx
-  kubectl create -f nginx-pod.yaml
-  Run a bash shell in one of the Cilium pods (Terminal Tab 2)
-  kubectl -n kube-system exec -ti ds/cilium -- bash
-  Install tcpdump and check if traffic is encrypted
-  apt-get update
-  apt-get -y install tcpdump
-  tcpdump -n -i cilium_wg0 -nn -vv
-  In Terminal Tab 1
-  kubectl get pods -o wide
+### Test WireGuard Encryption
+
+Create two pods on different worker nodes (as above), then:
+
+```bash
+kubectl -n kube-system exec -ti ds/cilium -- bash
+apt-get update && apt-get -y install tcpdump
+tcpdump -n -i cilium_wg0 -nn -vv
+```
+
+In another terminal:
+
+```bash
+kubectl get pods -o wide
+kubectl exec -it curl-pod -- sh
+curl <NGINX-POD-IP>
+```
 
 kubectl exec -it curl-pod -- sh
-
 curl <NGINX-POD-IP>
+
+---
+
+## Example Pod YAML for WireGuard Test
+
+**nginx-pod.yaml**
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx
+spec:
+  nodeSelector:
+    kubernetes.io/hostname: kind-worker2
+  containers:
+    - name: nginx
+      image: nginx
+```
+
+Apply the pod manifest:
+
+```bash
+kubectl create -f nginx-pod.yaml
+```
+
+---
+
+You have now completed all Cilium network policy and encryption practice steps for CKS preparation!
