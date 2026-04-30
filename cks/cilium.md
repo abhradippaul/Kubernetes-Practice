@@ -373,18 +373,34 @@ Delete the policy:
 kubectl delete -f entities-world.yaml
 ```
 
+#### Additional Testing
+
+Test access from the existing curl pod:
+
+```bash
 kubectl get pods -o wide
 kubectl exec -it curl-pod -- sh
 curl <NGINX-POD-IP>
 curl google.com
 ping google.com
+```
+
+Create another curl pod and test access:
+
+```bash
 kubectl run curl --image=alpine/curl -- sleep 36000
 kubectl get pods -o wide
 kubectl exec -it curl-pod -- sh
 curl <NGINX-POD-IP>
 ping google.com
 curl google.com
-kubectl delelte pods --all
+```
+
+Delete all pods:
+
+```bash
+kubectl delete pods --all
+```
 
 ---
 
@@ -529,15 +545,39 @@ kubectl delete -f allow-dns.yaml
 kubectl delete pod curl
 ```
 
+### Quick Commands for Advanced Policy and Encryption
+
+Create the test pods:
+
+```bash
 kubectl run random-pod --labels=app=random-pod --image=alpine/curl -- sleep 36000
 kubectl run backend-pod --image=alpine/curl -- sleep 36000
+```
+
+Access the test pods:
+
+```bash
 kubectl exec -it backend-pod -- sh
 kubectl exec -it random-pod -- sh
+```
+
+Delete the ingress deny policy:
+
+```bash
 kubectl delete -f ingressDeny.yaml
-egress:
+```
+
+Test egress traffic:
+
+```bash
 kubectl exec -it random-pod -- sh
 curl google.com
 kubectl delete pod nginx random-pod backend-pod
+```
+
+Enable and verify IPSec encryption:
+
+```bash
 kubectl -n kube-system get secrets cilium-ipsec-keys
 cilium install --version 1.17.1 --set encryption.enabled=true --set encryption.type=ipsec
 cilium status
@@ -546,10 +586,16 @@ kubectl get nodes
 nano curl-pod.yaml
 kubectl exec -it curl -- sh
 curl <NGINX-POD-IP>
+```
+
+Enable and verify WireGuard encryption:
+
+```bash
 cilium install --version 1.17.1 --set encryption.enabled=true --set encryption.type=wireguard
 cilium status
 cilium config view | grep enable-wireguard
 nano curl-pod.yaml
+```
 
 ---
 
