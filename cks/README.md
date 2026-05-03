@@ -259,3 +259,10 @@ systemctl status etcd
 Step 5: Check etcd Logs
 journalctl -u etcd
 ```
+
+## Security Scanning and Policy Enforcement
+
+Detailed information on static analysis and policy enforcement can be found in the [Security Scanning Guide](./security-scanning.md). This includes:
+- **Kubesec**: Manifest security scoring.
+- **Kube-linter**: Best practices linting.
+- **OPA**: Open Policy Agent for dynamic admission control.
