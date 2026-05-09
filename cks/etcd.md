@@ -25,10 +25,10 @@ Verify that the secret is stored in plain-text or easily readable format.
 
 ```bash
 
-ETCDCTL_API=3 etcdctl --endpoints=https://127.0.0.1:2379 \
---insecure-skip-tls-verify  --insecure-transport=false \
---cert /etc/kubernetes/pki/apiserver-etcd-client.crt \
---key /etc/kubernetes/pki/apiserver-etcd-client.key \
+ETCDCTL_API=3 etcdctl \
+--cacert=/etc/kubernetes/pki/etcd/ca.crt   \
+--cert=/etc/kubernetes/pki/etcd/server.crt \
+--key=/etc/kubernetes/pki/etcd/server.key  \
 get /registry/secrets/default/new-secret | hexdump -C
 
 cd /var/lib/etcd
@@ -115,12 +115,17 @@ Check if the new secret is encrypted in ETCD.
 
 ```bash
 
-ETCDCTL_API=3 etcdctl --endpoints=https://127.0.0.1:2379 \
---insecure-skip-tls-verify  --insecure-transport=false \
---cert /etc/kubernetes/pki/apiserver-etcd-client.crt \
---key /etc/kubernetes/pki/apiserver-etcd-client.key \
-get /registry/secrets/default/new-secret | hexdump -C
+ETCDCTL_API=3 etcdctl \
+--cacert=/etc/kubernetes/pki/etcd/ca.crt   \
+--cert=/etc/kubernetes/pki/etcd/server.crt \
+--key=/etc/kubernetes/pki/etcd/server.key  \
+get /registry/secrets/default/db-secret | hexdump -C
 
 cd /var/lib/etcd
 grep -R "dbpasswd" .
+```
+
+```bash
+# Run this as an administrator that can read and write all Secrets
+kubectl get secrets --all-namespaces -o json | kubectl replace -f -
 ```

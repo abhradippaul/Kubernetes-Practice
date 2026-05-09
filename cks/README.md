@@ -1,5 +1,3 @@
-# Preparing CKS
-
 ## ETCD Security Guidelines
 
 ### Plain text data storage
@@ -59,60 +57,6 @@ etcd
 apt install net-tools
 
 netstat -ntlp
-```
-
-## Certificates
-
-### Certificate Authority
-
-```bash
-# Verify the certificate CA
-openssl verify -CAfile ca.crt client.crt
-
-# Content of the certificate
-openssl x509 -in client.crt -text -noout
-```
-
-### Configure CA
-
-```bash
-# Step 1 - Creating a private key for Certificate Authority:
-mkdir /root/certificates
-
-cd /root/certificates
-
-# Step 2 - Creating Private Key and CSR:
-openssl genrsa -out ca.key 2048
-
-openssl req -new -key ca.key -subj "/CN=KUBERNETES-CA" -out ca.csr
-
-# Verify the csr
-openssl req -in ca.csr -text -noout
-
-# Step 3 - Self-Sign the CSR:
-openssl x509 -req -in ca.csr -signkey ca.key -out ca.crt -days 1000
-
-# Content of the certificate
-openssl x509 -in client.crt -text -noout
-```
-
-### Configure client certificate
-
-```bash
-# Step 1 - Generate Client CSR and Client Key:
-cd /root/certificates
-
-openssl genrsa -out abhra.key 2048
-
-openssl req -new -key abhra.key -subj "/CN=abhra" -out abhra.csr
-
-# Step 2 - Sign the Client CSR with Certificate Authority
-openssl x509 -req -in abhra.csr -CA ca.crt -CAkey ca.key -out abhra.crt -days 1000
-
-# Step 3 - Verify Client Certificate
-openssl x509 -in abhra.crt -text -noout
-
-openssl verify -CAfile ca.crt abhra.crt
 ```
 
 ### Configure ETCD certificate
@@ -263,6 +207,7 @@ journalctl -u etcd
 ## Security Scanning and Policy Enforcement
 
 Detailed information on static analysis and policy enforcement can be found in the [Security Scanning Guide](./security-scanning.md). This includes:
+
 - **Kubesec**: Manifest security scoring.
 - **Kube-linter**: Best practices linting.
 - **OPA**: Open Policy Agent for dynamic admission control.
