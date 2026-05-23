@@ -14,7 +14,7 @@ netstat -ntlp
 Open the admission configuration file:
 
 ```bash
-nano /etc/kubernetes/pki/admission-config.yaml
+vim /etc/kubernetes/pki/admission-config.yaml
 ```
 
 ```yaml

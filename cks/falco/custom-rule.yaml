@@ -1,0 +1,9 @@
+customRules:
+  custom_rules.yaml: |- 
+    - rule: Detect curl Execution in Kubernetes Pod
+      desc: Detects when the curl utility is executed within a Kubernetes pod.
+      condition: >
+        spawned_process and container and proc.name = "curl"
+      output: >
+        "Suspicious process detected (curl) inside a Container container_id=%container.id container_name=%container.name."
+      priority: WARNING

@@ -39,7 +39,7 @@ kubectl run normal-pod --image=nginx -n restricted-ns
 Create the manifest:
 
 ```bash
-nano restricted-pod.yaml
+vim restricted-pod.yaml
 ```
 
 ```yaml

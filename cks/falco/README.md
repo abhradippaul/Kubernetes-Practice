@@ -29,15 +29,14 @@ Falco setup with helm
 helm repo add falcosecurity https://falcosecurity.github.io/charts
 helm repo update
 
-helm install falco falcosecurity/falco \
- --create-namespace \
- --namespace falco
+helm install --replace falco --namespace falco --create-namespace --set tty=true falcosecurity/falco
 
 kubectl get pods -n falco -o wide
 
-NAME READY STATUS RESTARTS AGE IP NODE NOMINATED NODE READINESS GATES
-falco-25zgj 2/2 Running 0 93s 192.168.1.118 node01 <none> <none>
-falco-pxskz 2/2 Running 0 93s 192.168.0.195 controlplane <none> <none>
+kubectl create deployment nginx --image=nginx
+kubectl logs -f -l app.kubernetes.io/name=falco -n falco -c falco | grep Warning
+kubectl exec -it $(kubectl get pods --selector=app=nginx -o name) -- cat /etc/shadow
+kubectl exec -it $(kubectl get pods --selector=app=nginx -o name) -- curl localhost
 
 custom falco rule
 
@@ -53,4 +52,4 @@ output: >
 Suspicious process detected (curl) inside a Container.
 priority: WARNING
 
-helm upgrade --install -n falco falco falcosecurity/falco -f custom-rule.yaml
+helm upgrade --namespace falco falco falcosecurity/falco --set tty=true -f custom-rule.yaml
