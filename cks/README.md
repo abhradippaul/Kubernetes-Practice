@@ -1,4 +1,6 @@
-## ETCD Security Guidelines
+# ETCD Security Guidelines
+
+This guide covers ETCD storage behavior, TLS encryption, certificate-based authentication, mTLS, and systemd setup for CKS practice.
 
 ### Plain text data storage
 
@@ -170,10 +172,11 @@ etcdctl --endpoints=https://127.0.0.1:2379 \
 ### ETCD Systemd
 
 ```bash
-Step 1: Create Data Directory for etcd
+# Step 1: Create Data Directory for etcd
 mkdir /var/lib/etcd
 chmod 700 /var/lib/etcd
-Step 2: Create Systemd file for etcd
+
+# Step 2: Create Systemd file for etcd
 cat <<EOF | sudo tee /etc/systemd/system/etcd.service
 [Unit]
 Description=etcd
@@ -194,13 +197,16 @@ RestartSec=5
 [Install]
 WantedBy=multi-user.target
 EOF
-Step 3: Start etcd
+
+# Step 3: Start etcd
 systemctl start etcd
 
 systemctl enable etcd
-Step 4: Verify the status
+
+# Step 4: Verify the status
 systemctl status etcd
-Step 5: Check etcd Logs
+
+# Step 5: Check etcd Logs
 journalctl -u etcd
 ```
 

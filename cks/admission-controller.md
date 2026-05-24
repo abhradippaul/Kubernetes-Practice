@@ -1,5 +1,7 @@
 # Admission Controller Lab
 
+This lab configures the Kubernetes API server to use an admission configuration file and enables the `ImagePolicyWebhook` admission plugin.
+
 ## Configure API Server (Tab 2)
 
 Install `net-tools` and inspect listening ports:

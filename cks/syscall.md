@@ -1,14 +1,22 @@
+# Syscall Tracing and Seccomp
+
+This guide covers basic syscall tracing with `strace`, runtime tracing with `tracee`, and seccomp profile enforcement for containers and Pods.
+
+## Strace
+
+Use `strace` to inspect Linux syscalls made by a process or command:
+
+```bash
 which strace
-
 strace ls
-
 pidof cat
-
 strace -p 4425
-
 strace -c ls
+```
 
 ## Tracee
+
+Run Tracee as a privileged container to trace host and container runtime events:
 
 ```bash
 docker run --name tracee --rm --privileged --pid=host \
@@ -23,6 +31,8 @@ docker run --name tracee --rm --privileged --pid=host \
 ```
 
 ## Seccomp
+
+Check seccomp support and inspect seccomp status inside containers:
 
 ```bash
 grep -i seccomp /boot/config-$(uname -r)

@@ -1,6 +1,12 @@
-# Kube bench
+# Kube-bench
 
-https://github.com/aquasecurity/kube-bench
+This guide shows how to run `kube-bench` as a Kubernetes Job to check cluster configuration against CIS Kubernetes Benchmark recommendations.
+
+## Reference
+
+- [Aqua Security kube-bench](https://github.com/aquasecurity/kube-bench)
+
+## Run Kube-bench as a Job
 
 ```bash
 kubectl apply -f -<<EOF

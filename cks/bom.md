@@ -2,6 +2,25 @@
 
 Documentation for managing SBOMs using `bom` and `trivy`.
 
+## Reference Links
+
+- Trivy official repository: <https://github.com/aquasecurity/trivy>
+- Docker Hub page for Nginx: <https://hub.docker.com/_/nginx>
+
+## Quick Trivy Commands
+
+Install Trivy:
+
+```bash
+curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin
+```
+
+Scan an Nginx image:
+
+```bash
+trivy image nginx:1.19.5
+```
+
 ## Install BOM
 
 Download and install the Kubernetes SIGs `bom` tool:
@@ -53,4 +72,10 @@ trivy image --format cyclonedx --output nginx-cyclone.json nginx:latest
 
 # Scan an existing SBOM
 trivy sbom nginx-spdx.json
+
+# Scan an SBOM and write JSON output
+trivy sbom nginx-spdx.json --format json --output ./sbom_check_result.json
+
+# Scan an image for high and critical vulnerabilities
+trivy image --severity HIGH,CRITICAL nginx
 ```

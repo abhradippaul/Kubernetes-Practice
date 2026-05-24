@@ -1,5 +1,7 @@
 # Preparing CKS
 
+This guide covers Certificate Authority setup and client certificate generation tasks commonly used while preparing for CKS.
+
 ## Certificates
 
 ### Certificate Authority

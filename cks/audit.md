@@ -2,7 +2,7 @@
 
 This guide demonstrates how to enable and verify Kubernetes audit logging. Audit logs are essential for tracking access and changes to your cluster, helping with security and compliance.
 
-## Step 1 – Create Sample Audit Policy File
+## Step 1 - Create Sample Audit Policy File
 
 First, create an audit policy file that defines what events should be logged by the Kubernetes API server. The example below logs metadata for all requests.
 

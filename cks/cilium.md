@@ -79,8 +79,7 @@ kubectl get pods -o wide
 Test connectivity from the Curl pod to the Nginx pod.
 
 ```bash
-kubectl exec -it curl -- sh
-curl <NGINX-IP>
+kubectl exec -it curl -- curl <NGINX-IP>
 ```
 
 ## Example 1: Simple Deny Policy
@@ -531,11 +530,11 @@ Apply the policy:
 kubectl create -f allow-dns.yaml
 ```
 
-#### Testing
+#### Test the DNS Policy
 
 ```bash
-nslookup google.com
-nslookup kplabs.in
+kubectl exec curl -- nslookup google.com
+kubectl exec curl -- nslookup kplabs.in
 ```
 
 Delete the setup:
@@ -625,7 +624,7 @@ spec:
   ingress:
     - fromEntities:
         - all
-      ingressDeny: {}
+  ingressDeny:
     - fromEndpoints:
         - matchLabels:
             app: random-pod
@@ -641,12 +640,10 @@ kubectl create -f ingressDeny.yaml
 
 ```bash
 kubectl get pods -o wide
-kubectl exec -it backend-pod -- sh
-curl <NGINX-POD-IP>
-ping <NGINX-POD-IP>
-kubectl exec -it random-pod -- sh
-curl <NGINX-POD-IP>
-ping <NGINX-POD-IP>
+kubectl exec -it backend-pod -- curl <NGINX-POD-IP>
+kubectl exec -it backend-pod -- ping <NGINX-POD-IP>
+kubectl exec -it random-pod -- curl <NGINX-POD-IP>
+kubectl exec -it random-pod -- ping <NGINX-POD-IP>
 ```
 
 Delete the policy:
@@ -671,7 +668,7 @@ spec:
   egress:
     - toEntities:
         - all
-      egressDeny: {}
+  egressDeny:
     - toEndpoints:
         - matchLabels:
             app: server
@@ -687,11 +684,10 @@ kubectl create -f egressDeny.yaml
 
 ```bash
 kubectl get pods -o wide
-kubectl exec -it random-pod -- sh
-curl <NGINX-POD-IP>
-ping <NGINX-POD-IP>
-curl google.com
-ping google.com
+kubectl exec -it random-pod -- curl <NGINX-POD-IP>
+kubectl exec -it random-pod -- ping <NGINX-POD-IP>
+kubectl exec -it random-pod -- curl google.com
+kubectl exec -it random-pod -- ping google.com
 ```
 
 Delete the policy and pods:

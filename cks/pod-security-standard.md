@@ -1,5 +1,7 @@
 # Pod Security Standards Lab
 
+This lab demonstrates how to apply Kubernetes Pod Security Standards at the namespace level and test `privileged`, `baseline`, and `restricted` enforcement behavior.
+
 ## Create 3 Namespaces
 
 ```bash
